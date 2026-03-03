@@ -38,11 +38,11 @@ The bot initiates contact with a non-salesy icebreaker to establish its persona.
 
 ### **2. Identifying User Pain Points**
 The AI identifies user struggles (e.g., the 9-to-5 grind or trading losses) and provides context-aware responses.
-👉 **[View Phase 2 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%202.png?raw=true)**
+👉 **[View Phase 2 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%202.png)**
 
 ### **3. Strategic Conversion & Link Sharing**
 Once interest is piqued, the bot shares the 'Global Community' link as a natural solution.
-👉 **[View Phase 3 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%203.png?raw=true)**
+👉 **[View Phase 3 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%203.png)**
 
 ---
 
