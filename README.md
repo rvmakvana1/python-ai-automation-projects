@@ -1,4 +1,4 @@
-# 🐍 Python AI Automation Master Portfolio
+# Python AI Automation Master Portfolio
 
 Welcome to my central hub for **Advanced AI & Python Automation**. This repository showcases a collection of high-performance, autonomous systems designed to leverage **Artificial Intelligence (LLMs)** to solve real-world business challenges and streamline complex workflows.
 
@@ -34,7 +34,7 @@ The agent follows a high-conversion 7-step funnel. Below is the live interaction
 
 ### **1. Rapport & Trust Building**
 The bot initiates contact with a non-salesy icebreaker to establish its persona.
-👉 **[View Phase 1 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%201.png?raw=true)**
+👉 **[View Phase 1 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%201.png)**
 
 ### **2. Identifying User Pain Points**
 The AI identifies user struggles (e.g., the 9-to-5 grind or trading losses) and provides context-aware responses.
