@@ -61,7 +61,6 @@ Once interest is piqued, the bot shares the 'Global Community' link as a natural
 
 # 🚀 WhatsApp-to-Gemini AI Automation Agency Bot
 
-![WhatsApp Bot Flow & AI Posters](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/whatsapp%20automation.png?raw=true)
 
 ## 📌 Project Overview
 This project is a fully automated, end-to-end "AI Creative Agency in a Bot." It acts as a digital sales consultant that interacts with customers via WhatsApp, gathers their business details, and uses an advanced browser-automation pipeline to command Google's Gemini AI. The result? A hyper-personalized, photorealistic 3D promotional poster delivered straight to the customer's WhatsApp in under a minute.
@@ -116,6 +115,7 @@ Building an end-to-end automation pipeline via UI scraping comes with unique edg
 * **AI Model:** Google Gemini (Nano Banana 2 / Imagen 3 via UI Scraping)
 * **Integrations:** Meta WhatsApp Cloud API Webhooks
 * **AI Coding Assistant:** Claude Code (for architectural guidance and rapid script refactoring)
+
 
 
 ![WhatsApp Bot Flow & AI Posters](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/whatsapp%20automation.png?raw=true)
