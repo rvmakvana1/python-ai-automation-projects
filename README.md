@@ -117,6 +117,9 @@ Building an end-to-end automation pipeline via UI scraping comes with unique edg
 * **Integrations:** Meta WhatsApp Cloud API Webhooks
 * **AI Coding Assistant:** Claude Code (for architectural guidance and rapid script refactoring)
 
+
+![WhatsApp Bot Flow & AI Posters](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/whatsapp%20automation.png?raw=true)
+
 ---
 
 ## 🤝 Let's Connect
