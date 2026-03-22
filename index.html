@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GST Invoice Generator</title>
+  <!-- jsPDF + html2canvas for PDF generation with ₹ symbol support -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* ---------- Reset & Base ---------- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 14px;
+      background: #f0f4f8;
+      color: #1a1a2e;
+    }
+
+    /* Fixed (locked) seller fields — not editable */
+    .field-locked {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a2e;
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .field-locked::after {
+      content: '🔒';
+      font-size: 10px;
+      opacity: 0.4;
+    }
+
+    /* ---------- Page wrapper ---------- */
+    .page {
+      width: 900px;
+      margin: 36px auto 60px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    /* ---------- Header: logo left, invoice info right ---------- */
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: #1a3c6e;
+      padding: 32px 40px;
+      color: #ffffff;
+    }
+
+    .logo-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .company-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    #company-logo {
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    .invoice-meta-block {
+      text-align: right;
+    }
+
+    .invoice-meta-block h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .meta-row label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.65);
+      white-space: nowrap;
+    }
+
+    .meta-row input {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 4px;
+      color: #ffffff;
+      font-size: 13px;
+      padding: 4px 8px;
+      text-align: right;
+      width: 170px;
+      outline: none;
+    }
+
+    .meta-row input:focus {
+      border-color: #7eb3f5;
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* ---------- Body content ---------- */
+    .invoice-body { padding: 36px 40px; }
+
+    /* ---------- Two-column: Seller + Client ---------- */
+    .party-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+
+    .party-box {
+      background: #f7f9fc;
+      border: 1px solid #dce6f0;
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .party-box h3 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #1a3c6e;
+      border-bottom: 2px solid #1a3c6e;
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .field-group label {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 11px;
+      color: #6b7a99;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .field-group input,
+    .field-group textarea {
+      font-size: 13px;
+      color: #1a1a2e;
+      border: 1px solid #d0d9e8;
+      border-radius: 4px;
+      padding: 6px 9px;
+      outline: none;
+      font-family: inherit;
+      background: #ffffff;
+      resize: none;
+    }
+
+    .field-group input:focus,
+    .field-group textarea:focus {
+      border-color: #1a3c6e;
+      box-shadow: 0 0 0 2px rgba(26,60,110,0.1);
+    }
+
+    .field-group textarea { height: 56px; }
+
+    /* ---------- Section headings ---------- */
+    .section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #1a3c6e;
+      border-bottom: 2px solid #1a3c6e;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+    }
+
+    /* ---------- Line Items Table ---------- */
+    #items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+
+    #items-table thead tr {
+      background: #1a3c6e;
+      color: #ffffff;
+    }
+
+    #items-table th {
+      padding: 10px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    /* Columns: 1=# 2=desc 3=hsn 4=qty 5=rate 6=disc% 7=amount 8=action */
+    #items-table th:nth-child(1) { width: 35px;  text-align: center; }
+    #items-table th:nth-child(3) { width: 85px;  text-align: center; }
+    #items-table th:nth-child(4) { width: 65px;  text-align: center; }
+    #items-table th:nth-child(5) { width: 100px; text-align: right; }
+    #items-table th:nth-child(6) { width: 70px;  text-align: right; }
+    #items-table th:nth-child(7) { width: 115px; text-align: right; }
+    #items-table th:nth-child(8) { width: 70px;  text-align: center; }
+
+    #items-table tbody tr { border-bottom: 1px solid #e8eef5; }
+    #items-table tbody tr:nth-child(even) { background: #f7f9fc; }
+
+    #items-table td {
+      padding: 8px 12px;
+      vertical-align: middle;
+    }
+
+    #items-table td:nth-child(1) { text-align: center; color: #6b7a99; font-size: 12px; }
+    #items-table td:nth-child(3) { text-align: center; }
+    #items-table td:nth-child(4) { text-align: center; }
+    #items-table td:nth-child(5) { text-align: right; }
+    #items-table td:nth-child(6) { text-align: right; }
+    #items-table td.col-amount   { text-align: right; font-weight: 600; color: #1a3c6e; }
+    #items-table td:nth-child(8) { text-align: center; }
+
+    #items-table input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 5px 7px;
+      font-size: 13px;
+      font-family: inherit;
+      background: transparent;
+      outline: none;
+      color: #1a1a2e;
+    }
+
+    #items-table input:focus {
+      border-color: #1a3c6e;
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(26,60,110,0.1);
+    }
+
+    #items-table td:nth-child(4) input,
+    #items-table td:nth-child(5) input,
+    #items-table td:nth-child(6) input { text-align: right; }
+
+    /* ---------- Notes & Payment Terms section ---------- */
+    .notes-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 8px;
+      margin-bottom: 24px;
+    }
+
+    .notes-box {
+      background: #f7f9fc;
+      border: 1px solid #dce6f0;
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .notes-box h3 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #1a3c6e;
+      border-bottom: 2px solid #1a3c6e;
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+    }
+
+    .notes-box select {
+      font-size: 13px;
+      color: #1a1a2e;
+      border: 1px solid #d0d9e8;
+      border-radius: 4px;
+      padding: 6px 9px;
+      outline: none;
+      font-family: inherit;
+      background: #ffffff;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .notes-box select:focus { border-color: #1a3c6e; box-shadow: 0 0 0 2px rgba(26,60,110,0.1); }
+
+    .notes-box textarea { height: 76px; }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      font-weight: 500;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #1a3c6e;
+      color: #1a3c6e;
+    }
+    .btn-outline:hover { background: #eef3fa; }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid #e0e0e0;
+      color: #c0392b;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    .btn-danger:hover { background: #fff0ee; border-color: #c0392b; }
+
+    .btn-primary {
+      background: #1a3c6e;
+      color: #ffffff;
+      padding: 10px 28px;
+      font-size: 14px;
+    }
+    .btn-primary:hover { background: #14305a; }
+
+    /* ---------- Totals block ---------- */
+    .totals-section {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 24px;
+      margin-bottom: 32px;
+    }
+
+    .totals-box {
+      width: 320px;
+      border: 1px solid #dce6f0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .totals-row:last-child { border-bottom: none; }
+
+    .totals-row .t-label {
+      font-size: 12px;
+      color: #6b7a99;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .totals-row .t-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    .totals-row.grand {
+      background: #1a3c6e;
+    }
+
+    .totals-row.grand .t-label,
+    .totals-row.grand .t-value {
+      color: #ffffff;
+      font-size: 15px;
+    }
+
+    .gst-rate-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .gst-rate-row .t-label {
+      font-size: 12px;
+      color: #6b7a99;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    #gst-rate {
+      border: 1px solid #d0d9e8;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #1a1a2e;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #gst-rate:focus { border-color: #1a3c6e; }
+
+    /* ---------- Actions bar ---------- */
+    .actions-bar {
+      display: flex;
+      justify-content: flex-end;
+      padding: 20px 40px;
+      background: #f7f9fc;
+      border-top: 1px solid #dce6f0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ── Header: Logo (left) + Invoice title & meta (right) ── -->
+  <header class="invoice-header">
+
+    <div class="logo-block">
+      <img id="company-logo" src="https://i.ibb.co/20cXgz5w/Gemini-Generated-Image-mcbe95mcbe95mcbe.png" alt="Chandra Saree Logo" />
+      <span class="company-name">Chandra Saree</span>
+    </div>
+
+    <div class="invoice-meta-block">
+      <h1>Invoice</h1>
+      <div class="meta-row">
+        <label>Invoice No.</label>
+        <input type="text" id="invoice-number" value="INV-2025-26-001" />
+      </div>
+      <div class="meta-row">
+        <label>Date</label>
+        <input type="date" id="invoice-date" />
+      </div>
+    </div>
+
+  </header>
+
+  <!-- ── Body ── -->
+  <div class="invoice-body">
+
+    <!-- Seller + Client side by side -->
+    <div class="party-row">
+
+      <div class="party-box">
+        <h3>From (Seller)</h3>
+        <div class="field-group">
+          <label>Business Name
+            <span class="field-locked">Chandra Saree</span>
+          </label>
+          <label>Address
+            <span class="field-locked">Pune, Shanti Nagar, 41006</span>
+          </label>
+          <label>GSTIN
+            <span class="field-locked">GSTJASHGDAD56778</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="party-box">
+        <h3>Bill To (Client)</h3>
+        <div class="field-group">
+          <label>Client Name
+            <input type="text" id="client-name" placeholder="Client / Company Name" />
+          </label>
+          <label>Address
+            <textarea id="client-address" placeholder="Street, City, State, PIN"></textarea>
+          </label>
+          <label>GSTIN
+            <input type="text" id="client-gstin" placeholder="22AAAAA0000A1Z5" maxlength="15" />
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Line Items -->
+    <h3 class="section-title">Line Items</h3>
+    <table id="items-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Service / Description</th>
+          <th>HSN/SAC</th>
+          <th>Qty</th>
+          <th>Rate (₹)</th>
+          <th>Disc%</th>
+          <th>Amount (₹)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="items-body">
+        <!-- Rows added dynamically by JS -->
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-outline" id="add-row-btn">+ Add Row</button>
+
+    <!-- Totals -->
+    <div class="totals-section">
+      <div class="totals-box">
+        <div class="totals-row">
+          <span class="t-label">Subtotal</span>
+          <span class="t-value" id="subtotal">₹0.00</span>
+        </div>
+        <div class="gst-rate-row">
+          <span class="t-label">GST Rate</span>
+          <select id="gst-rate">
+            <option value="0">0%</option>
+            <option value="5">5%</option>
+            <option value="12">12%</option>
+            <option value="18" selected>18%</option>
+            <option value="28">28%</option>
+          </select>
+        </div>
+        <div class="totals-row">
+          <span class="t-label">GST Amount</span>
+          <span class="t-value" id="gst-amount">₹0.00</span>
+        </div>
+        <div class="totals-row grand">
+          <span class="t-label">Grand Total</span>
+          <span class="t-value" id="grand-total">₹0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes & Payment Terms -->
+    <div class="notes-section">
+
+      <div class="notes-box">
+        <h3>Bank Details</h3>
+        <div class="field-group">
+          <label>Bank Name
+            <input type="text" id="bank-name" placeholder="e.g. State Bank of India" />
+          </label>
+          <label>Account No
+            <input type="text" id="bank-account" placeholder="Account Number" />
+          </label>
+          <label>IFSC Code
+            <input type="text" id="bank-ifsc" placeholder="e.g. SBIN0001234" maxlength="11" />
+          </label>
+          <label>Account Type
+            <select id="bank-account-type">
+              <option value="Current">Current</option>
+              <option value="Savings">Savings</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-box">
+        <h3>Payment Terms &amp; Notes</h3>
+        <div class="field-group">
+          <label>Payment Terms
+            <select id="payment-terms">
+              <option value="Due on Receipt">Due on Receipt</option>
+              <option value="Net 15">Net 15 Days</option>
+              <option value="Net 30" selected>Net 30 Days</option>
+              <option value="Net 60">Net 60 Days</option>
+            </select>
+          </label>
+          <label>Notes / Message
+            <textarea id="invoice-notes" placeholder="Thank you for your business!"></textarea>
+          </label>
+        </div>
+      </div>
+
+    </div><!-- /notes-section -->
+
+  </div><!-- /invoice-body -->
+
+  <!-- ── Actions bar ── -->
+  <div class="actions-bar">
+    <button type="button" class="btn btn-primary" id="download-pdf-btn">⬇ Download Invoice</button>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  const tbody = document.getElementById('items-body');
+
+  // Set today's date as default invoice date (DD/MM/YYYY stored as YYYY-MM-DD for input[type=date])
+  document.getElementById('invoice-date').valueAsDate = new Date();
+
+  // Format number as Indian currency (e.g. ₹1,00,000.00)
+  function formatINR(value) {
+    return '₹' + value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // Recalculate a single row's Amount = Qty × Rate × (1 - Disc%), then refresh totals
+  function recalcRow(row) {
+    const qty  = parseFloat(row.querySelector('.col-qty').value)  || 0;
+    const rate = parseFloat(row.querySelector('.col-rate').value) || 0;
+    const disc = parseFloat(row.querySelector('.col-disc').value) || 0;
+    row.querySelector('.col-amount').textContent = formatINR(qty * rate * (1 - disc / 100));
+    recalcTotals();
+  }
+
+  // Sum all rows → compute GST → update subtotal / gst-amount / grand-total
+  function recalcTotals() {
+    let subtotal = 0;
+    tbody.querySelectorAll('tr').forEach(row => {
+      const qty  = parseFloat(row.querySelector('.col-qty').value)  || 0;
+      const rate = parseFloat(row.querySelector('.col-rate').value) || 0;
+      const disc = parseFloat(row.querySelector('.col-disc').value) || 0;
+      subtotal += qty * rate * (1 - disc / 100);
+    });
+
+    const gstRate    = parseFloat(document.getElementById('gst-rate').value) || 0;
+    const gstAmount  = subtotal * gstRate / 100;
+    const grandTotal = subtotal + gstAmount;
+
+    document.getElementById('subtotal').textContent    = formatINR(subtotal);
+    document.getElementById('gst-amount').textContent  = formatINR(gstAmount);
+    document.getElementById('grand-total').textContent = formatINR(grandTotal);
+  }
+
+  // Renumber the # column after add / remove
+  function renumberRows() {
+    tbody.querySelectorAll('tr').forEach((row, i) => {
+      row.querySelector('.col-num').textContent = i + 1;
+    });
+  }
+
+  // Create and append a new line-item row
+  function addRow() {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="col-num"></td>
+      <td><input class="col-desc" type="text" placeholder="Service description" /></td>
+      <td><input class="col-hsn"  type="text" placeholder="HSN/SAC" /></td>
+      <td><input class="col-qty"  type="number" min="0" step="1"    value="1" /></td>
+      <td><input class="col-rate" type="number" min="0" step="0.01" placeholder="0.00" /></td>
+      <td><input class="col-disc" type="number" min="0" max="100" step="0.01" value="0" /></td>
+      <td class="col-amount">₹0.00</td>
+      <td style="text-align:center"><button type="button" class="btn btn-danger remove-row-btn">Remove</button></td>
+    `;
+
+    row.querySelector('.col-qty').addEventListener('input',  () => recalcRow(row));
+    row.querySelector('.col-rate').addEventListener('input', () => recalcRow(row));
+    row.querySelector('.col-disc').addEventListener('input', () => recalcRow(row));
+
+    row.querySelector('.remove-row-btn').addEventListener('click', () => {
+      if (tbody.querySelectorAll('tr').length > 1) {
+        row.remove();
+        renumberRows();
+        recalcTotals();
+      } else {
+        alert('At least one line item is required.');
+      }
+    });
+
+    tbody.appendChild(row);
+    renumberRows();
+  }
+
+  document.getElementById('add-row-btn').addEventListener('click', addRow);
+  document.getElementById('gst-rate').addEventListener('change', recalcTotals);
+
+  // ── PDF Download ──
+  document.getElementById('download-pdf-btn').addEventListener('click', async function () {
+    const btn = this;
+    btn.textContent = 'Generating…';
+    btn.disabled = true;
+
+    // Hide interactive elements that should not appear in the PDF
+    const addRowBtn   = document.getElementById('add-row-btn');
+    const actionsBar  = document.querySelector('.actions-bar');
+    const removebtns  = document.querySelectorAll('.remove-row-btn');
+    const actionTh    = document.querySelector('#items-table thead th:last-child');
+    const actionTds   = document.querySelectorAll('#items-table tbody td:last-child');
+
+    addRowBtn.style.display  = 'none';
+    actionsBar.style.display = 'none';
+    removebtns.forEach(b  => b.style.display = 'none');
+    if (actionTh) actionTh.style.display = 'none';
+    actionTds.forEach(td => td.style.display = 'none');
+
+    try {
+      // Render the invoice div to a canvas at 2× resolution for sharpness
+      const canvas = await html2canvas(document.querySelector('.page'), {
+        scale: 2,
+        useCORS: true,        // allows the logo image from imgbb to load
+        backgroundColor: '#ffffff',
+        logging: false
+      });
+
+      const { jsPDF } = window.jspdf;
+      const pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pdfW  = pdf.internal.pageSize.getWidth();   // 210 mm
+      const pdfH  = pdf.internal.pageSize.getHeight();  // 297 mm
+      const imgW  = pdfW;
+      const imgH  = (canvas.height * pdfW) / canvas.width;
+
+      // Multi-page support: slice canvas across pages if content is tall
+      const totalPages = Math.ceil(imgH / pdfH);
+      for (let p = 0; p < totalPages; p++) {
+        if (p > 0) pdf.addPage();
+        // Negative y shifts the image upward so the correct page slice shows
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, -(p * pdfH), imgW, imgH);
+      }
+
+      // Name the file after the invoice number
+      const invoiceNum = document.getElementById('invoice-number').value.trim() || 'invoice';
+      pdf.save(invoiceNum + '.pdf');
+
+    } catch (err) {
+      console.error(err);
+      alert('PDF generation failed. Please try again.');
+    }
+
+    // Restore hidden elements
+    addRowBtn.style.display  = '';
+    actionsBar.style.display = '';
+    removebtns.forEach(b  => b.style.display = '');
+    if (actionTh) actionTh.style.display = '';
+    actionTds.forEach(td => td.style.display = '');
+    btn.textContent = '⬇ Download Invoice';
+    btn.disabled = false;
+  });
+
+  // Start with one empty row
+  addRow();
+</script>
+
+</body>
+</html>
