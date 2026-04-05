@@ -453,7 +453,7 @@ _QR_CAPTION = (
     "💥 એટલે કે એક વખત પેમેન્ટ – આખું વર્ષ ટેન્શન ફ્રી!\n\n"
     "Payment કરવા માટે ઉપર આપેલા QR Code અથવા નીચે આપેલી UPI ID પર payment કરો "
     "અને screenshot મોકલો.\n"
-    "UPI ID: joshijigar543-1@okicici"
+    "UPI ID: <YOUR_UPI_ID_HERE>"
 )
 
 # Button title for the confirmation interactive message (WhatsApp max = 20 chars)
