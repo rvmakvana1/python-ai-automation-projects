@@ -7,7 +7,7 @@ This project is a fully automated, end-to-end **"AI Creative Agency in a Bot."**
 
 | 1. Onboarding & Menu | 2. Gathers Business Details | 3. Instantly Delivers HD Poster |
 | :--- | :--- | :--- |
-| ![WhatsApp Bot Menu](images/1_whatsapp_menu.jpg) | ![User Input Process](images/2_user_input.jpg) | ![Poster Delivered in Chat](images/3_chat_delivery.jpg) |
+| ![WhatsApp Bot Menu](1_whatsapp_menu.jpg) | ![User Input Process](images/2_user_input.jpg) | ![Poster Delivered in Chat](images/3_chat_delivery.jpg) |
 
 Built to demonstrate advanced state-machine logic, Meta API webhook handling, and resilient AI integrations, this project guarantees flawless execution through a custom-built dual-engine architecture.
 
