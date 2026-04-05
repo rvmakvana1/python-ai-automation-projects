@@ -68,6 +68,14 @@ Relying on a single point of failure is dangerous in production. This bot implem
 * **AI Coding Assistant:** Claude Code (Utilized for architectural guidance, rapid refactoring, and complex Playwright logic optimization)
 * **Security:** Environment variables (`python-dotenv`) for strict API key and token masking.
 
+## 📂 Repository Assets (Core Source Code)
+
+Here are the main engines driving this automation. Click to explore the code:
+
+* 📜 **[app.py](app.py)**: The core Flask server, Meta WhatsApp Webhook handler, and the State-Machine logic for the sales funnel.
+* 🕸️ **[gemini_scraper.py](gemini_scraper.py)**: The Dual-Engine image generation script (Imagen API + Playwright automation) that creates and extracts the final posters.
+* 📦 **[requirements.txt](requirements.txt)**: The list of Python libraries and dependencies required to run this project.
+
 ---
 
 ## 🛡️ Security & Installation
