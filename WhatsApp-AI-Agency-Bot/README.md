@@ -33,7 +33,7 @@ Relying on a single point of failure is dangerous in production. This bot implem
 * **Solution:** Separated the design from the text. The AI engines generate a pristine *blank* background. A custom Python rendering engine (using Pillow / Playwright HTML overlays) then mathematically calculates the grid and prints the business details in perfect `NotoSansGujarati` font over the AI image. **0% spelling mistakes.**
 
 **Proof of Output Quality (AI Background + Flawless Gujarati Text):**
-![Final High Resolution Poster](images/4_final_poster_hd.png)
+![Final High Resolution Poster](4_final_poster_hd.png)
 
 ### 2. The Playwright Concurrency Crash
 * **Problem:** Multiple WhatsApp users requesting posters simultaneously caused the Flask server to open competing Chromium instances on the same user-data directory, crashing the application.
