@@ -28,21 +28,21 @@ The agent follows a high-conversion 7-step funnel. Below is the live interaction
 
 ### **1. Rapport & Trust Building**
 The bot initiates contact with a non-salesy icebreaker to establish its persona.
-👉 **[View Phase 1 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%201.png)**
+👉 **[View Phase 1 Screenshot](Crypto%20Guide%201.png)**
 
 ### **2. Identifying User Pain Points**
 The AI identifies user struggles (e.g., the 9-to-5 grind or trading losses) and provides context-aware responses.
-👉 **[View Phase 2 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%202.png)**
+👉 **[View Phase 2 Screenshot](Crypto%20Guide%202.png)**
 
 ### **3. Strategic Conversion & Link Sharing**
 Once interest is piqued, the bot shares the 'Global Community' link as a natural solution.
-👉 **[View Phase 3 Screenshot](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/Crypto%20Guide%203.png)**
+👉 **[View Phase 3 Screenshot](Crypto%20Guide%203.png)**
 
 ---
 
 ## 📂 Repository Assets
 
-* 📜 **[lead_sender_2.py](https://github.com/rvmakvana1/python-ai-automation-projects/blob/main/lead_sender_2.py)**: The core Python engine and autonomous reply logic.
+* 📜 **[lead_sender_2.py](lead_sender_2.py)**: The core Python engine and autonomous reply logic.
 * 📄 **[LICENSE](./LICENSE)**: MIT Licensed for professional open-source standards.
 * 🙈 **[.gitignore](./.gitignore)**: Configured to protect sensitive environment variables.
 
