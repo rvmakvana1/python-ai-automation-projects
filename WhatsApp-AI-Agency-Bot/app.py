@@ -1230,7 +1230,7 @@ def handle_state_machine(sender_phone, user_text, host_url):
                 print(f"[{sender_phone}] WARNING: qr_code.jpg not found — sending UPI fallback.")
                 send_whatsapp_message(
                     sender_phone,
-                    "UPI ID: joshijigar543-1@okicici\n\nPayment karo aur screenshot bhejo.",
+                    "UPI ID: YOUR_UPI_ID_HERE\n\nPayment karo aur screenshot bhejo.",
                 )
             user_states[sender_phone]["state"] = STATE_PAYMENT
         else:
