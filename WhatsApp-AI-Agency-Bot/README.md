@@ -28,11 +28,11 @@ Relying on a single point of failure is dangerous in production. This bot implem
 
 ## 🚧 Engineering Challenges & Architectural Solutions
 
-### 1. The Regional Typography Hallucination (AI Text Issue)
-* **Problem:** Native AI image models struggle to draw complex regional scripts (like Gujarati conjuncts), resulting in misspelled business names on posters.
-* **Solution:** Separated the design from the text. The AI engines generate a pristine *blank* background. A custom Python rendering engine (using Pillow / Playwright HTML overlays) then mathematically calculates the grid and prints the business details in perfect `NotoSansGujarati` font over the AI image. **0% spelling mistakes.**
+### 1. The Typography Hallucination (AI Text Issue)
+* **Problem:** Native AI image models struggle to draw complex regional scripts and often misspell business names on posters.
+* **Solution:** Separated the design from the text. The AI engines generate a pristine *blank* background. A custom Python rendering engine (using Pillow / Playwright HTML overlays) then mathematically calculates the grid and prints the business details in perfect multi-lingual fonts (English, Hindi, or Gujarati) over the AI image. **0% spelling mistakes.**
 
-**Proof of Output Quality (AI Background + Flawless Gujarati Text):**
+**Proof of Output Quality (AI Background + Flawless Typography Overlay):**
 ![Final High Resolution Poster](4_final_poster_hd.png)
 
 ### 2. The Playwright Concurrency Crash
@@ -49,13 +49,13 @@ Relying on a single point of failure is dangerous in production. This bot implem
 
 ---
 
-## 🏗️ System Architecture & User Flow
-1.  **Multi-Lingual Onboarding:** Dynamic adaptation to Gujarati, Hindi, or English based on user preference.
-2.  **Smart Sales Funnel:** A state-machine-driven flow collects business details interactively.
+## 🏗️ System Architecture: How It Works
+1.  **Multi-Lingual Onboarding:** The bot greets the user and dynamically adapts to Gujarati, Hindi, or English based on user preference.
+2.  **Smart Sales Funnel:** A state-machine-driven conversational flow interactively collects business details (Name, Number, Address, Tagline).
 3.  **Hybrid Prompt Injection:** User details are mapped to an optimized master dictionary of 85+ photorealistic scene descriptions.
-4.  **Dual-Engine Generation:** Passes the prompt to Engine A (API) or Engine B (Playwright) to secure the visual asset.
-5.  **Typography Overlay:** Injects flawless text layers onto the AI background.
-6.  **WhatsApp Delivery & Monetization:** Delivers the asset via Meta Cloud API, followed by an automated ₹499/year subscription pitch and UPI QR code.
+4.  **Dual-Engine Generation:** The system passes the prompt to Engine A (API) or Engine B (Playwright) to secure the blank visual asset.
+5.  **Typography Overlay:** The custom Python engine injects flawless text layers (Contact info, Branding) onto the generated AI background.
+6.  **WhatsApp Delivery & Monetization:** The final HD asset is delivered via Meta Cloud API, followed by an automated ₹499/year subscription pitch and a UPI QR code for payment.
 
 ---
 
@@ -65,6 +65,7 @@ Relying on a single point of failure is dangerous in production. This bot implem
 * **Browser Automation:** Playwright (Sync API)
 * **Graphics Rendering:** Pillow (PIL), HTML/CSS DOM manipulation
 * **Integrations:** Meta WhatsApp Cloud API Webhooks
+* **AI Coding Assistant:** Claude Code (Utilized for architectural guidance, rapid refactoring, and complex Playwright logic optimization)
 * **Security:** Environment variables (`python-dotenv`) for strict API key and token masking.
 
 ---
