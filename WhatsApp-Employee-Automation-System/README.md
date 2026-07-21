@@ -1,4 +1,4 @@
-# PromoPe Bot 🤖
+# # WhatsApp Employee Automation System
 
 A WhatsApp-based employee task management and daily reporting bot for **PromoPe**, a talent/influencer marketing company. It automates the daily grind of assigning tasks, collecting end-of-day reports, and archiving proof-of-work screenshots — all through a conversation employees already use every day: WhatsApp.
 
