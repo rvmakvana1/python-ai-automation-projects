@@ -1,0 +1,8 @@
+flask
+requests
+gspread
+google-auth
+apscheduler
+openai
+python-dotenv
+cloudinary
